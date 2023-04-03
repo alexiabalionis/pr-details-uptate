@@ -22,7 +22,7 @@ const run = async () => {
     }" and a base branch "${baseBranch || "<not specified>"}"`
   );
 
-  const branchHead = `${credentials.owner}:${sourceBranch}`;
+  const branchHead = `${credentials.owner}:test`;
   const { data: pulls } = await octokit.rest.pulls.list({
     ...credentials,
     base: baseBranch,
