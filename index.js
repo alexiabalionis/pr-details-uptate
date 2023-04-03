@@ -93,6 +93,7 @@ const run = async () => {
         ","
       )}"`
     );
+    core.info(Array.from(prReviewers.split(",")));
     params.reviewers = Array.from(prReviewers.split(","));
     params.team = teamReviewers || [];
     await octokit.request(`POST ${url}/requested_reviewers`, params);
