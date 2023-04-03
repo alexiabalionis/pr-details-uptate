@@ -14,7 +14,7 @@ inputs:
   destination_branch:
     description: "Base branch of the PR. Default is main."
     default: main
-  destination_branch:
+  source_branch:
     description: "Base branch of the PR. Default is homolog."
     default: test
   pr_reviewers:
