@@ -31,7 +31,7 @@ jobs:
           github_token: ${{ secrets.GH_TOKEN }}
           destination_branch: main
           source_branch: test
-          pr_title: Promote homolog to production taylors version
-          pr_body: updatessss
-          pr_reviewers: "alexiabalionis"
+          pr_title: Promote homolog to production feat
+          pr_body: updatessss aaa
+          pr_reviewers: ["alexiabalionis"]
           pr_team_reviewers: ""
