@@ -33,5 +33,5 @@ jobs:
           source_branch: test
           pr_title: Promote homolog to production feat
           pr_body: updatessss aaa
-          pr_reviewers: "alexiabalionis,leonluna"
+          pr_reviewers: "abalioni,leonluna"
           pr_team_reviewers: ""
