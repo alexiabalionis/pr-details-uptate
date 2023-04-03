@@ -9784,7 +9784,7 @@ const run = async () => {
   const prReviewers = core.getInput("pr_reviewers");
   const teamReviewers = core.getInput("pr_team_reviewers");
   const baseBranch = core.getInput("destination_branch");
-  const sourceBranch = github.context.ref.replace(/^refs\/heads\//, "");
+  const sourceBranch = core.getInput("source_branch");
 
   const credentials = {
     owner: github.context.repo.owner,
@@ -9798,7 +9798,7 @@ const run = async () => {
     }" and a base branch "${baseBranch || "<not specified>"}"`
   );
 
-  const branchHead = `${credentials.owner}:${sourceBranch}`;
+  const branchHead = `${credentials.owner}:test`;
   const { data: pulls } = await octokit.rest.pulls.list({
     ...credentials,
     base: baseBranch,
