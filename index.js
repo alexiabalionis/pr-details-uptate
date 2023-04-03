@@ -1,21 +1,114 @@
-const core = require('@actions/core');
-const wait = require('./wait');
+const github = require("@actions/github");
+const core = require("@actions/core");
 
+const run = async () => {
+  const githubToken = core.getInput("github_token", { required: true });
+  const prTitle = core.getInput("pr_title");
+  const prBody = core.getInput("pr_body");
+  const prReviewers = core.getInput("pr_reviewers");
+  const teamReviewers = core.getInput("pr_team_reviewers");
+  const baseBranch = core.getInput("destination_branch");
+  const sourceBranch = github.context.ref.replace(/^refs\/heads\//, "");
 
-// most @actions toolkit packages have async methods
-async function run() {
-  try {
-    const ms = core.getInput('milliseconds');
-    core.info(`Waiting ${ms} milliseconds ...`);
+  const credentials = {
+    owner: github.context.repo.owner,
+    repo: github.context.repo.repo,
+  };
 
-    core.debug((new Date()).toTimeString()); // debug is only output if you set the secret `ACTIONS_RUNNER_DEBUG` to true
-    await wait(parseInt(ms));
-    core.info((new Date()).toTimeString());
+  const octokit = github.getOctokit(githubToken);
+  core.info(
+    `Looking up a pull request with a source branch "${
+      sourceBranch || "<not found>"
+    }" and a base branch "${baseBranch || "<not specified>"}"`
+  );
 
-    core.setOutput('time', new Date().toTimeString());
-  } catch (error) {
-    core.setFailed(error.message);
+  const branchHead = `${credentials.owner}:${sourceBranch}`;
+  const { data: pulls } = await octokit.rest.pulls.list({
+    ...credentials,
+    base: baseBranch,
+    head: branchHead,
+  });
+
+  if (pulls.length === 0) {
+    throw new Error(
+      `No pull request found for a source branch "${
+        sourceBranch || "<not found>"
+      }" and a base branch "${baseBranch || "<not specified>"}"`
+    );
   }
-}
 
-run();
+  const pullRequest = pulls.find((p) => p.state === "open");
+  if (pullRequest == null) {
+    throw new Error(
+      `No open pull requests found for a source branch "${
+        sourceBranch || "<not found>"
+      }" and a base branch "${baseBranch || "<not specified>"}"`
+    );
+  }
+
+  const {
+    number: pullNumber,
+    base: { ref: pullRequestTargetBranch },
+  } = pullRequest;
+  core.info(
+    `Pull request #${pullNumber} has been found for  a source branch "${
+      sourceBranch || "<not found>"
+    }" and a base branch "${baseBranch || "<not specified>"}"`
+  );
+
+  const params = {
+    ...credentials,
+    pull_number: pullNumber,
+  };
+
+  if (prTitle) {
+    core.info(
+      `Pull request #${pullNumber}'s title will be set to "${prTitle}"`
+    );
+    params.title = prTitle;
+  }
+
+  if (prBody) {
+    core.info(`Pull request #${pullNumber}'s body will be set to "${prBody}"`);
+    params.body = prBody;
+  }
+
+  if (baseBranch && baseBranch !== pullRequestTargetBranch) {
+    core.info(
+      `Pull request #${pullNumber}'s base branch will be set to "${baseBranch}"`
+    );
+    params.title = prTitle;
+  }
+
+  const url = `/repos/${credentials.owner}/${credentials.repo}/pulls/${pullNumber}`;
+
+  core.info(
+    `Making a PATCH request to "${url}" with params "${JSON.stringify(params)}"`
+  );
+  await octokit.request(`PATCH ${url}`, params);
+
+  if (prReviewers) {
+    core.info(
+      `Pull request #${pullNumber}'s reviewers will be set to "${prReviewers}"`
+    );
+    params.reviewers = prReviewers;
+    params.team = teamReviewers || [];
+    await octokit.request(`POST ${url}/requested_reviewers`, params);
+  }
+};
+
+// Github boolean inputs are strings https://github.com/actions/runner/issues/1483
+const failOnError = core.getInput("fail_on_error") == "true";
+
+run()
+  .then(() => {
+    core.info("Done.");
+  })
+  .catch((e) => {
+    core.error("Cannot update the pull request.");
+    if (failOnError) {
+      core.setFailed(e.stack || e.message);
+    } else {
+      core.error(e.stack || e.message);
+    }
+  });
