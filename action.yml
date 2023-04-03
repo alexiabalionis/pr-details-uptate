@@ -15,7 +15,7 @@ inputs:
     description: "Base branch of the PR. Default is main."
     default: main
   destination_branch:
-    description: "Base branch of the PR. Default is test."
+    description: "Base branch of the PR. Default is homolog."
     default: test
   pr_reviewers:
     description: "Array of usernames that will be set to be PR reviewers"
