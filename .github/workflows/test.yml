@@ -32,3 +32,4 @@ jobs:
           pr_title: Promote homolog to production taylors version
           pr_body: update
           pr_reviewers: "alexiabalionis"
+          pr_team_reviewers: ""
