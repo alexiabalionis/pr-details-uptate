@@ -91,7 +91,7 @@ const run = async () => {
     core.info(
       `Pull request #${pullNumber}'s reviewers will be set to "${prReviewers}"`
     );
-    params.reviewers = prReviewers;
+    params.reviewers = [JSON.parse(prReviewers)];
     params.team = teamReviewers || [];
     await octokit.request(`POST ${url}/requested_reviewers`, params);
   }
