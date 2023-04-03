@@ -31,6 +31,6 @@ jobs:
           destination_branch: main
           source_branch: test
           pr_title: Promote homolog to production taylors version
-          pr_body: update
+          pr_body: updates
           pr_reviewers: "alexiabalionis"
           pr_team_reviewers: ""
