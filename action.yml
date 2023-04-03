@@ -1,9 +1,6 @@
 name: "Update PR details"
 description: "GitHub Action that updates the pull request description and title"
 author: "Alexia Balionis"
-runs:
-  using: "node16"
-  main: "dist/index.js"
 inputs:
   github_token:
     description: "The GITHUB_TOKEN secret"
@@ -15,14 +12,17 @@ inputs:
     description: "The body of the PR"
     default: ""
   destination_branch:
-    description: "Base branch of the PR. Default is master."
-    default: master
+    description: "Base branch of the PR. Default is main."
+    default: main
+  destination_branch:
+    description: "Base branch of the PR. Default is test."
+    default: test
   pr_reviewers:
     description: "Array of usernames that will be set to be PR reviewers"
-    default: master
+    default: ""
   pr_team_reviewers:
     description: "Array of team slugs that will be set to be PR reviewers"
-    default: master
+    default: ""
   fail_on_error:
     description: "Raise an exception and mark the action as failed in case of error"
     default: "true"
@@ -30,3 +30,6 @@ inputs:
 branding:
   icon: git-pull-request
   color: green
+runs:
+  using: "node16"
+  main: "dist/index.js"
