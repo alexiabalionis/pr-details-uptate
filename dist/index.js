@@ -9865,9 +9865,12 @@ const run = async () => {
 
   if (prReviewers) {
     core.info(
-      `Pull request #${pullNumber}'s reviewers will be set to "${prReviewers}"`
+      `Pull request #${pullNumber}'s reviewers will be set to "${prReviewers.split(
+        ","
+      )}"`
     );
-    params.reviewers = prReviewers;
+    core.info(`Params: ${params}`);
+    params.reviewers = [prReviewers.split(",")];
     params.team = teamReviewers || [];
     await octokit.request(`POST ${url}/requested_reviewers`, params);
   }
