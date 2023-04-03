@@ -23,7 +23,7 @@ jobs:
           pr_title: Promote homolog to production
           pr_body: teste
 
-      - name: Get message
+      - name: Update PR
         id: get_prs
         uses: ./
         with:
